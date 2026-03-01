@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📍 Check-Out Kehadiran</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.5/signature_pad.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .current-time {
+            font-size: 28px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #FF9800;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+            background-color: #fff9f3;
+        }
+
+        .info-box {
+            background: #fff9f3;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box .label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-box .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FF9800;
+        }
+
+        .signature-section {
+            margin: 30px 0;
+            border: 2px dashed #FF9800;
+            border-radius: 10px;
+            padding: 20px;
+            background: #fff9f3;
+        }
+
+        .signature-section label {
+            margin-bottom: 15px;
+        }
+
+        .signature-help {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        #signaturePad {
+            border: 2px solid #FF9800;
+            border-radius: 8px;
+            background: white;
+            cursor: crosshair;
+            display: block;
+            width: 100%;
+            height: 150px;
+            touch-action: none;
+        }
+
+        .signature-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-clear {
+            background: #ff6b6b;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-clear:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            width: 100%;
+            font-size: 15px;
+            padding: 16px 30px;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            background: #c8e6c9;
+            color: #2e7d32;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #ffcdd2;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f44336;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer-link a {
+            color: #FF9800;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            margin-right: 15px;
+        }
+
+        .footer-link a:hover {
+            color: #F57C00;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .current-time {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            #signaturePad {
+                height: 120px;
+            }
+
+            .footer-link a {
+                display: block;
+                margin: 10px 0;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📍 CHECK-OUT</h1>
+            <div class="subtitle">Sampai Jumpa Besok! Silakan Absen Pulang</div>
+            <div class="current-time" id="currentTime">--:--:--</div>
+        </div>
+
+        <div class="content">
+            <div class="success-message" id="successMessage">
+                ✓ Check-Out berhasil! Terima kasih, sampai jumpa besok.
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                ❌ <span id="errorText"></span>
+            </div>
+
+            <form id="checkoutForm">
+                <!-- Nama Karyawan -->
+                <div class="form-group">
+                    <label for="namaKaryawan">👤 Nama Lengkap</label>
+                    <select id="namaKaryawan" required autofocus>
+                        <option value="">-- Pilih Nama Anda --</option>
+                    </select>
+                </div>
+
+                <!-- Info Check-In -->
+                <div class="info-box">
+                    <div class="label">⏰ Jam Check-In</div>
+                    <div class="value" id="infoCheckin">--:--</div>
+                </div>
+
+                <!-- Jam Check-Out (Auto) -->
+                <div class="form-group">
+                    <label>⏰ Jam Check-Out</label>
+                    <div style="background: #fff9f3; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Waktu Pulang Anda</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #FF9800;" id="displayJamCheckout">--:--</div>
+                    </div>
+                </div>
+
+                <!-- Durasi Kerja -->
+                <div class="form-group">
+                    <label>⏱️ Durasi Kerja</label>
+                    <div style="background: #fff9f3; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 16px; font-weight: 700; color: #FF9800;" id="durasiKerja">-- jam --</div>
+                    </div>
+                </div>
+
+                <!-- Tanda Tangan -->
+                <div class="signature-section">
+                    <label>✍️ Tanda Tangan Digital</label>
+                    <p class="signature-help">Silakan tanda tangan di area di bawah ini untuk konfirmasi pulang</p>
+                    <canvas id="signaturePad"></canvas>
+                    <div class="signature-actions">
+                        <button type="button" class="btn btn-clear" onclick="clearSignature()">🗑️ Bersihkan</button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">✓ KONFIRMASI CHECK-OUT</button>
+
+                <div class="footer-link">
+                    <a href="absensi_checkin.html">📍 Check-In</a>
+                    <a href="absensi_dashboard.html">📊 Daftar Absensi</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let signaturePad;
+        const canvas = document.getElementById('signaturePad');
+
+        // Initialize Signature Pad
+        function initSignaturePad() {
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(255,255,255,0)',
+                penColor: '#FF9800'
+            });
+        }
+
+        // Populate nama dari localStorage
+        function populateNama() {
+            const dataAbsensi = JSON.parse(localStorage.getItem('dataAbsensi')) || [];
+            const today = new Date().toLocaleDateString('id-ID');
+            
+            // Filter nama yang belum checkout hari ini
+            const uniqueNama = [...new Set(
+                dataAbsensi
+                    .filter(d => d.tanggal === today && d.jamCheckout === null)
+                    .map(d => d.nama)
+            )];
+
+            const select = document.getElementById('namaKaryawan');
+            
+            uniqueNama.forEach(nama => {
+                const option = document.createElement('option');
+                option.value = nama;
+                option.textContent = nama;
+                select.appendChild(option);
+            });
+
+            if (uniqueNama.length === 0) {
+                // Show all names yang sudah checkin hari ini
+                const allNama = [...new Set(
+                    dataAbsensi
+                        .filter(d => d.tanggal === today)
+                        .map(d => d.nama)
+                )];
+                
+                allNama.forEach(nama => {
+                    const option = document.createElement('option');
+                    option.value = nama;
+                    option.textContent = nama;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        // Update jam setiap detik
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('displayJamCheckout').textContent = `${hours}:${minutes}`;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Handle nama selection
+        document.getElementById('namaKaryawan').addEventListener('change', function() {
+            const nama = this.value;
+            if (!nama) {
+                document.getElementById('infoCheckin').textContent = '--:--';
+                document.getElementById('durasiKerja').textContent = '-- jam --';
+                return;
+            }
+
+            const dataAbsensi = JSON.parse(localStorage.getItem('dataAbsensi')) || [];
+            const today = new Date().toLocaleDateString('id-ID');
+            
+            const checkinData = dataAbsensi.find(d => 
+                d.nama === nama && d.tanggal === today
+            );
+
+            if (checkinData) {
+                document.getElementById('infoCheckin').textContent = checkinData.jamCheckin;
+                
+                // Hitung durasi
+                const jamCheckin = checkinData.jamCheckin;
+                const now = new Date();
+                const jamCheckout = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                const [hIn, mIn] = jamCheckin.split(':').map(Number);
+                const [hOut, mOut] = jamCheckout.split(':').map(Number);
+                
+                const menit = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                const jam = Math.floor(menit / 60);
+                const mnt = menit % 60;
+                
+                document.getElementById('durasiKerja').textContent = `${jam} jam ${mnt} menit`;
+            }
+        });
+
+        // Clear signature
+        function clearSignature() {
+            signaturePad.clear();
+        }
+
+        // Form submission
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nama = document.getElementById('namaKaryawan').value;
+            
+            if (!nama) {
+                showError('Silakan pilih nama terlebih dahulu');
+                return;
+            }
+
+            if (signaturePad.isEmpty()) {
+                showError('Silakan tanda tangan terlebih dahulu');
+                return;
+            }
+
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const jamCheckout = `${hours}:${minutes}`;
+
+            // Get signature
+            const signatureData = canvas.toDataURL('image/png');
+
+            // Update data di localStorage
+            const dataAbsensi = JSON.parse(localStorage.getItem('dataAbsensi')) || [];
+            const today = new Date().toLocaleDateString('id-ID');
+            
+            const targetIndex = dataAbsensi.findIndex(d => 
+                d.nama === nama && d.tanggal === today
+            );
+
+            if (targetIndex !== -1) {
+                dataAbsensi[targetIndex].jamCheckout = jamCheckout;
+                dataAbsensi[targetIndex].signatureCheckout = signatureData;
+                dataAbsensi[targetIndex].status = 'complete';
+                
+                localStorage.setItem('dataAbsensi', JSON.stringify(dataAbsensi));
+
+                // Tampilkan success message
+                const msg = document.getElementById('successMessage');
+                msg.classList.add('show');
+
+                // Reset form
+                document.getElementById('checkoutForm').reset();
+                signaturePad.clear();
+                document.getElementById('infoCheckin').textContent = '--:--';
+                document.getElementById('durasiKerja').textContent = '-- jam --';
+
+                // Redirect setelah 2 detik
+                setTimeout(() => {
+                    // window.location.href = 'absensi_dashboard.html';
+                }, 2000);
+            } else {
+                showError('Data check-in tidak ditemukan');
+            }
+        });
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = msg;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 3000);
+        }
+
+        // Init
+        populateNama();
+        initSignaturePad();
+    </script>
+</body>
+</html>
